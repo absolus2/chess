@@ -1,0 +1,24 @@
+
+Color	Foreground	Background	COLOR equivalent
+Black BLACK █	Esc[30m	Esc[40m	0
+Red DARK_RED █	Esc[31m	Esc[41m	4
+Green DARK_GREEN █	Esc[32m	Esc[42m	2
+Yellow DARK_YELLOW █	Esc[33m	Esc[43m	6
+Blue DARK_BLUE █	Esc[34m	Esc[44m	1
+Magenta DARK_MAGENTA █	Esc[35m	Esc[45m	5
+Cyan DARK_CYAN █	Esc[36m	Esc[46m	3
+Light gray DARK_WHITE █	Esc[37m	Esc[47m	7
+Dark gray BRIGHT_BLACK █	Esc[90m	Esc[100m	8
+Light red BRIGHT_RED █	Esc[91m	Esc[101m	C
+Light green BRIGHT_GREEN █	Esc[92m	Esc[102m	A
+Light yellow BRIGHT_YELLOW █	Esc[93m	Esc[103m	E
+Light blue BRIGHT_BLUE █	Esc[94m	Esc[104m	9
+Light magenta BRIGHT_MAGENTA █	Esc[95m	Esc[105m	D
+Light cyan BRIGHT_CYAN █	Esc[96m	Esc[106m	B
+White WHITE █	Esc[97m	Esc[107m	F
+Bold	Esc[1m	 	 
+Underline	Esc[4m	 	 
+No underline	Esc[24m	 	 
+Reverse text	Esc[7m	 	 
+Positive text (not reversed)	Esc[27m	 	 
+Default	Esc[0m	 	 
