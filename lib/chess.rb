@@ -3,20 +3,57 @@ require_relative './board'
 class Chess
   attr_accessor :board
 
-  include Search
-
   def initialize
     @board = Board.new
+    @player1 = 'White'
+    @player2 = 'Black'
+    @turn = 1
+    @player_turn = 'White'
   end
 
-  def move_piece
-    @board.display_board
-    puts 'Hello Player, which piece would you like to move?'
-    move = gets.chomp
-    p move
+  def play
+    until @turn == 12
+      puts "\n#{@board.display_board}"
+      play_turn
+      p @player_turn
+      @turn += 1
+    end
+  end
+
+  def move_piece(player)
+    puts "\nWhich piece would you like to move? #{player} player"
+    move = get_move
+    check_empty(move) ? move_piece : piece_info(@board.board[move[0]][move[1]])
+  end
+
+  def piece_info(piece)
+    puts "\nwhere would you like to move #{piece.image}"
+    next_m = get_move
+    moves = piece.add_neighbors(@board.board)
+    moves.include?(next_m) ? moved_piece : check_tile
   end
 
   private
+
+  def moved_piece
+
+  end
+
+  def check_empty(move)
+    @board.board[move[0]][move[1]].owner.nil?
+  end
+
+  def get_move(count = 0, letters = Hash[('a'..'h').map { |letter| [letter, count += 1] }])
+    move = gets.chomp.split(//)
+    cl = letters[move[0]]
+    rw = move[1].to_i
+    [cl, rw]
+  end
+
+  def play_turn(player = @turn.odd? ? 'White' : 'Black')
+    @player_turn = player
+    move_piece(@player_turn)
+  end
 
   def intro
     puts 'Welcome to this chess game, The rules are the basic ones of chess'
@@ -29,5 +66,6 @@ end
 
 new_game = Chess.new
 
-new_game.move_piece
+new_game.board.board[2][2] = Pawn.new("\u2659 ", [2, 2])
 
+new_game.play

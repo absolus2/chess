@@ -63,21 +63,27 @@ class Board
 
 end
 
-class Piece 
+class Piece
 
-  attr_accessor :image, :position, :neighbors, :owner
+  attr_accessor :image, :position, :neighbors, :owner, :column, :row, :pos
 
-  def initialize(image, position, neighbors = nil)
+  def initialize(image, position, movements = nil)
     @image = image
     @owner = add_owner
-    @position = position
-    @neighbors = neighbors
+    @column = position[0]
+    @row = position[1]
+    @pos = [@column, @row]
+    @movements = movements
   end
 
-  def print_board
-    p @board
+  def wh?
+    @owner == 'White'
   end
 
+  def bl?
+    @owner == 'Black'
+  end
+  
   private
 
   def add_owner
@@ -88,6 +94,35 @@ class Piece
   end
 
 end
+
+class Pawn < Piece
+
+  def add_neighbors(board)
+    white_neighbors(board) if @image.include?("\u2659 ")
+  end
+
+  def white_neighbors(board, posible_m = [[@column, @row + 1], [@column, @row + 2], [@column + 1, @row + 1], [@column - 1, @row + 1] ])
+    2.times { posible_m.each { |pm| posible_m.delete(pm) if check_board_wp(board, pm) } }
+
+    posible_m.delete([@column, @row + 2]) if @row != 2
+
+    posible_m.delete([@column, @row + 1]) && posible_m.delete([@column, @row + 2]) if board[@column][@row + 1].bl?
+
+    posible_m
+  end
+
+  def check_board_wp(board, pm, col = pm[0], rw = pm[1])
+
+    return true if pm.include?(0) || pm.include?(9)
+
+    return board[col][rw].owner != 'Black' if col == @column + 1 || col == @column - 1
+
+    false
+  end
+
+end
+
+
 
 
 

@@ -14,16 +14,9 @@ black chess pawn	♟︎	 "\u265F"
 =begin
 
 lets start with the pawn, can move up one square forward unless it the first move,
-then it can move up to 2 squares forward, the pawn can move diagonally if there another piece there
+then it can move up to 2 squares forward, the pawn can move diagonally if there another piece of the adversary there
+the piece cannot move across units
 
 
 
 =end 
-
- 3.times do
-      @board[count - 1].each_with_index do |item, i|
-        base.add_neighbor([count, i]) if i == num + 1
-      end
-      count += 1
-    end
-    p base
