@@ -1,6 +1,4 @@
 
-require_relative './search'
-
 class Board
 
   attr_accessor :board
@@ -22,6 +20,7 @@ class Board
     end
     print "#{black}      A      B      C      D      E      F      G      H"
   end
+
 
   private
 
@@ -83,7 +82,7 @@ class Piece
   def bl?
     @owner == 'Black'
   end
-  
+
   private
 
   def add_owner
@@ -93,16 +92,20 @@ class Piece
     nil
   end
 
-end
-
-class Pawn < Piece
-
-  def add_neighbors(board)
-    white_neighbors(board) if @image.include?("\u2659 ")
+  def check_tile(board, column, row, check)
+    begin
+      board[column][row].owner != check
+    rescue => e
+      true
+    end
   end
 
-  def white_neighbors(board, posible_m = [[@column, @row + 1], [@column, @row + 2], [@column + 1, @row + 1], [@column - 1, @row + 1] ])
-    2.times { posible_m.each { |pm| posible_m.delete(pm) if check_board_wp(board, pm) } }
+end
+
+class WhitePawn < Piece
+
+  def add_neighbors(board, posible_m = [[@column, @row + 1], [@column, @row + 2], [@column + 1, @row + 1], [@column - 1, @row + 1] ])
+    2.times { posible_m.each { |pm| posible_m.delete(pm) if check_board(board, pm) } }
 
     posible_m.delete([@column, @row + 2]) if @row != 2
 
@@ -111,7 +114,7 @@ class Pawn < Piece
     posible_m
   end
 
-  def check_board_wp(board, pm, col = pm[0], rw = pm[1])
+  def check_board(board, pm, col = pm[0], rw = pm[1])
 
     return true if pm.include?(0) || pm.include?(9)
 
@@ -122,8 +125,57 @@ class Pawn < Piece
 
 end
 
+class BlackPawn < Piece
 
+  def add_neighbors(board, posible_m = [[@column, @row - 1], [@column, @row - 2], [@column - 1, @row - 1], [@column + 1, @row - 1]])
+    check_board(board, posible_m)
 
+    posible_m.delete([@column, @row - 2]) if board[@column][@row - 2].wh?
+    posible_m.delete([@column, @row - 1]) && posible_m.delete([@column, @row - 2]) if board[@column][@row - 1].wh?
+
+    p posible_m
+  end
+
+  def check_board(board, posible_m)
+    posible_m.reject! do |item|
+      [@row - 2].include?(item[0]) if @row != 7
+
+      check_tile(board, item[0], item[1], 'White') if [0, 9, @column + 1, @column - 1].include?(item[0])
+    end
+  end
+
+end
+
+class WhiteRook < Piece
+
+  def add_neighbors(board, posible_m = add_moves(board))
+    m = check_r(board, posible_m)
+    p m
+  end
+
+  def check_r(board, posible_m)
+    
+  end
+
+  private 
+
+  def add_moves(board, mov = {v: [], h: []}, count = 8)
+    until count.zero?
+      board[count].each_value do |item|
+        mov[:v] << item.pos if item != self && count == @column
+        mov[:h] << item.pos if item != self && item.row == @row
+      end
+      count -= 1
+    end
+    mov
+  end
+end
+
+=begin
+board[@column].each_value do |item|
+      mov[:v] << item.pos if item != self
+    end
+=end
 
 
 

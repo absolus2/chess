@@ -20,24 +20,22 @@ class Chess
     end
   end
 
-  def move_piece(player)
-    puts "\nWhich piece would you like to move? #{player} player"
+  def move_piece
+    @board.display_board
+    puts "\nWhich piece would you like to move? #{@player1} player"
     move = get_move
     check_empty(move) ? move_piece : piece_info(@board.board[move[0]][move[1]])
   end
 
   def piece_info(piece)
     puts "\nwhere would you like to move #{piece.image}"
+    p piece
     next_m = get_move
     moves = piece.add_neighbors(@board.board)
-    moves.include?(next_m) ? moved_piece : check_tile
+    p moves.include?(next_m)
   end
 
   private
-
-  def moved_piece
-
-  end
 
   def check_empty(move)
     @board.board[move[0]][move[1]].owner.nil?
@@ -66,6 +64,6 @@ end
 
 new_game = Chess.new
 
-new_game.board.board[2][2] = Pawn.new("\u2659 ", [2, 2])
+new_game.board.board[4][4] = WhiteRook.new("\u2656 ", [4, 4])
 
-new_game.play
+new_game.move_piece

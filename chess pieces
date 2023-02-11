@@ -17,6 +17,9 @@ lets start with the pawn, can move up one square forward unless it the first mov
 then it can move up to 2 squares forward, the pawn can move diagonally if there another piece of the adversary there
 the piece cannot move across units
 
+white chess rook	♖	"\u2656"
 
+The roock, moves in a vertical en horizontall way, It cannot go over the pieces
+It can only end in a piece if the piece is not the owner
 
 =end 
