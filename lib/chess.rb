@@ -64,6 +64,6 @@ end
 
 new_game = Chess.new
 
-new_game.board.board[4][4] = WhiteRook.new("\u2656 ", [4, 4])
+new_game.board.board[3][6] = Bishop.new("\u265D ", [3, 6])
 
 new_game.move_piece

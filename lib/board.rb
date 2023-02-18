@@ -1,6 +1,4 @@
-
 class Board
-
   attr_accessor :board
 
   def initialize
@@ -21,7 +19,6 @@ class Board
     print "#{black}      A      B      C      D      E      F      G      H"
   end
 
-
   private
 
   def base_config
@@ -33,15 +30,14 @@ class Board
         b_pop(key)
       end
     end
-
   end
 
   def w_pop(key)
-    @board[key][1] = Piece.new("\u2656 ",[key, 1]) if [1, 8].include?(key)
-    @board[key][1] = Piece.new("\u2658 ",[key, 1]) if [2, 7].include?(key)
-    @board[key][1] = Piece.new("\u2655 ",[key, 1]) if key == 5
-    @board[key][1] = Piece.new("\u2657 ",[key, 1]) if [3, 6].include?(key)
-    @board[key][1] = Piece.new("\u2654 ",[key, 1]) if key == 4
+    @board[key][1] = Piece.new("\u2656 ", [key, 1]) if [1, 8].include?(key)
+    @board[key][1] = Piece.new("\u2658 ", [key, 1]) if [2, 7].include?(key)
+    @board[key][1] = Piece.new("\u2655 ", [key, 1]) if key == 5
+    @board[key][1] = Piece.new("\u2657 ", [key, 1]) if [3, 6].include?(key)
+    @board[key][1] = Piece.new("\u2654 ", [key, 1]) if key == 4
   end
 
   def b_pop(key)
@@ -59,11 +55,9 @@ class Board
   def even_line(black, row)
     puts "#{row}  \e[100m  #{@board[1][row].image} \e[100m  \e[44m  #{@board[2][row].image} \e[44m  \e[100m  #{@board[3][row].image} \e[100m  \e[44m  #{@board[4][row].image} \e[44m  \e[100m  #{@board[5][row].image} \e[100m  \e[44m  #{@board[6][row].image} \e[44m  \e[100m  #{@board[7][row].image} \e[100m  \e[44m  #{@board[8][row].image} \e[44m #{black}"
   end
-
 end
 
 class Piece
-
   attr_accessor :image, :position, :neighbors, :owner, :column, :row, :pos
 
   def initialize(image, position, movements = nil)
@@ -85,6 +79,14 @@ class Piece
 
   private
 
+  def opposite(item)
+    return true if @owner == 'Black' && item == 'White'
+
+    return true if @owner == 'White' && item == 'Black'
+ 
+    false
+  end
+
   def add_owner
     return 'Black' if ["\u265A ", "\u265B ", "\u265C ", "\u265D ", "\u265E ", "\u265F"].include?(@image)
     return 'White' if ["\u2654 ", "\u2655 ", "\u2656 ", "\u2657 ", "\u2658 ", "\u2659 "].include?(@image)
@@ -99,7 +101,6 @@ class Piece
       true
     end
   end
-
 end
 
 class WhitePawn < Piece
@@ -115,14 +116,12 @@ class WhitePawn < Piece
   end
 
   def check_board(board, pm, col = pm[0], rw = pm[1])
-
     return true if pm.include?(0) || pm.include?(9)
 
     return board[col][rw].owner != 'Black' if col == @column + 1 || col == @column - 1
 
     false
   end
-
 end
 
 class BlackPawn < Piece
@@ -146,20 +145,31 @@ class BlackPawn < Piece
 
 end
 
-class WhiteRook < Piece
+class Rook < Piece
 
   def add_neighbors(board, posible_m = add_moves(board))
-    m = check_r(board, posible_m)
-    p m
+    p posible_m[:h] + posible_m[:v]
   end
 
-  def check_r(board, posible_m)
-    
+  private
+
+  def update_m(board, array, moves = array)
+    array.each do |item|
+      piece = board[item[0]][item[1]].owner
+      update(moves, item, piece) unless piece.nil?
+    end
+    moves
   end
 
-  private 
+  def update(array, item, piece, opos = opposite(piece))
+    if item.sum < @pos.sum
+      opos ? array.slice!(0, array.find_index(item)) : array.slice!(0, array.find_index(item) + 1)
+    else
+      opos ? array.slice!(array.find_index(item) + 1, array.length) : array.slice!(array.find_index(item), array.length)
+    end
+  end
 
-  def add_moves(board, mov = {v: [], h: []}, count = 8)
+  def add_moves(board, mov = { v: [], h: [] }, count = 8)
     until count.zero?
       board[count].each_value do |item|
         mov[:v] << item.pos if item != self && count == @column
@@ -167,15 +177,47 @@ class WhiteRook < Piece
       end
       count -= 1
     end
+    mov[:h] = update_m(board, mov[:h].reverse)
+    mov[:v] = update_m(board, mov[:v])
     mov
   end
+
 end
 
-=begin
-board[@column].each_value do |item|
-      mov[:v] << item.pos if item != self
+
+class Bishop < Piece
+
+  def add_neighbors(board, posible_m = add_moves(board))
+    posible_m
+  end
+
+  def update(board, moves)
+    p moves
+  end
+
+
+  def add_moves(board, moves = { lu: [], ru: get_diag([@pos]).reject! { |item| item.include?(0) || item.include?(9) }})
+    count = 8
+    until count.zero?
+      board[count].each_value { |item| moves[:lu] << item.pos if @pos.sum == item.pos.sum && item.pos != @pos }
+      count -= 1
     end
-=end
+    update(board, moves[:lu].reverse)
+  end
+
+  private
+
+  def get_diag(base, start = base[0])
+    8.times do
+      first = base.first
+      last = base.last
+      base.unshift [first[0] - 1, first[1] - 1] unless first.include?(0)
+      base.push [last[0] + 1, last[1] + 1] unless last.include?(9)
+    end
+    base.reject! { |item| item == start }
+  end
+
+end
 
 
 

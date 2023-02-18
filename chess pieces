@@ -23,3 +23,11 @@ The roock, moves in a vertical en horizontall way, It cannot go over the pieces
 It can only end in a piece if the piece is not the owner
 
 =end 
+
+
+check vertical
+
+if the item is empty left alone
+if the item isn't empty and the same colour update the list to remove all the other items below that space and the space itself
+if the item isn't empty and not the same colour do the same as up but do not remove the item
+check to see if the item is below or upper of the piece we got
