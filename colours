@@ -1,3 +1,5 @@
+Color for the board and some pieces of the game.
+
 Color	Foreground	Background	COLOR equivalent
 Black BLACK █	Esc[30m	Esc[40m	0
 Red DARK_RED █	Esc[31m	Esc[41m	4

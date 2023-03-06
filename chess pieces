@@ -1,3 +1,5 @@
+Chess pieces values in unicode for the game.
+
 white chess king	♔	"\u2654"
 white chess queen	♕	"\u2655"
 white chess rook	♖	"\u2656"
@@ -10,24 +12,3 @@ black chess rook	♜	"\u265C"
 black chess bishop	♝	"\u265D"
 black chess knight	♞	"\u265E"
 black chess pawn	♟︎	 "\u265F"
-
-=begin
-
-lets start with the pawn, can move up one square forward unless it the first move,
-then it can move up to 2 squares forward, the pawn can move diagonally if there another piece of the adversary there
-the piece cannot move across units
-
-white chess rook	♖	"\u2656"
-
-The roock, moves in a vertical en horizontall way, It cannot go over the pieces
-It can only end in a piece if the piece is not the owner
-
-=end 
-
-
-check vertical
-
-if the item is empty left alone
-if the item isn't empty and the same colour update the list to remove all the other items below that space and the space itself
-if the item isn't empty and not the same colour do the same as up but do not remove the item
-check to see if the item is below or upper of the piece we got
