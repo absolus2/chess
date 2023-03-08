@@ -2,7 +2,7 @@ require_relative './search'
 require_relative './board'
 # Chess class to play the game.
 class Chess
-  attr_accessor :board
+  attr_accessor :board, :board_hash
 
   def initialize
     @board = Board.new
@@ -15,7 +15,7 @@ class Chess
 
   def play
     intro
-    until @turn == 12
+    until @turn == 20
       puts "\n#{@board.display_board}"
       play_turn
       puts ' '
@@ -62,6 +62,12 @@ class Chess
 
   def get_piece(player, count = 0, letters = Hash[('a'..'h').map { |num| [num, count += 1] }])
     piece = gets.chomp.split(//)
+
+    if piece.length <= 1 || piece[1] =~ /[A-Za-z]/
+      puts 'try again, Thats not a valid tile'
+      return get_piece(player)
+    end
+
     @board.board[letters[piece[0]]][piece[1].to_i]
   end
 
@@ -78,5 +84,6 @@ class Chess
 end
 
 new_game = Chess.new
+
 
 new_game.play

@@ -7,7 +7,31 @@ class Board
     @board = Hash[(1..8).map { |num| [num, Hash[(1..8).map { |nums| [nums, Piece.new('  ', [num, nums])] }]] }]
     @black_pieces = ["\u265A ", "\u265B ", "\u265C ", "\u265D ", "\u265E ", "\u265F"]
     @white_pieces = ["\u2654 ", "\u2655 ", "\u2656 ", "\u2657 ", "\u2658 ", "\u2659 "]
-   base_config
+    base_config
+  end
+
+  def pieces(pieces = { 'White': [], 'Black': [] })
+    @board.each do |_column, row|
+      row.each do |_key, value|
+        unless value.instance_of?(King)
+          pieces[:Black] << value if value.owner == 'Black'
+          pieces[:White] << value if value.owner == 'White'
+        end
+      end
+    end
+    pieces
+  end
+
+  def kings_pos(kings = { 'White': nil, 'Black': nil })
+    @board.each do |_column, row|
+      row.each do |_key, item|
+        if item.instance_of?(King)
+          kings[:White] = item.pos if item.owner == 'White'
+          kings[:Black] = item.pos if item.owner == 'Black'
+        end
+      end
+    end
+    kings
   end
 
   def display_board(count = 8, black = "\e[40m")
@@ -26,7 +50,7 @@ class Board
 
   def base_config
     @board.each do |key, v|
-      v.each do |v_key, item|
+      v.each do |v_key, _item|
         white_populate(key, v_key)
         black_populate(key, v_key)
       end

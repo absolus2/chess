@@ -166,9 +166,7 @@ class Bishop < Piece
   def check_moves(moves)
     # Check moves the sum of the elements from the item and the pos should be the same
     # Check moves, if the absolute value of the substration of the piece and the item is the same, the move is valid
-    moves.all? do |item|
-      item.sum == @pos.sum || (item[0] - item[1]) == (@col - @row).abs
-    end
+    moves.all? { |item| item.sum == @pos.sum || (item[0] - item[1]).abs == (@col - @row).abs }
   end
 
   # Update the posible moves value, to what it should be.
@@ -256,6 +254,14 @@ class King < Piece
     clean_moves
   end
 
+  # if the move is legal proceed to check if the piece can move
+  def verify(board, target, moves = search(target))
+    return false if moves.nil?
+
+    # if the move is legal, then proceed to check the tiles for other pieces.
+    check_tiles(board, moves) if check_moves(moves)
+  end
+ 
   private
 
   def check_tiles(board, moves, tile = moves[0])
