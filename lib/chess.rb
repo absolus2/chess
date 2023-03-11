@@ -85,5 +85,4 @@ end
 
 new_game = Chess.new
 
-
 new_game.play

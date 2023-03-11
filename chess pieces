@@ -14,4 +14,8 @@ black chess knight	♞	"\u265E"
 black chess pawn	♟︎	 "\u265F"
 
 
+ok, I Cannot make a move that puts my king in check in any circustance for it would be an illegal move.
 
+Therefore i must check that every time i try to move my king, I have to check every other piece on the board.
+
+and see if those pieces would be able to check the king once that move is done.

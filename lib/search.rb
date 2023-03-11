@@ -32,6 +32,22 @@ module Search
       @map[first.parent] = [first.pos]
     end
   end
+
+  def get_pieces(board, pieces = [])
+    board.each do |_column, row|
+      row.each do |_key, value|
+        unless value.instance_of?(King)
+          pieces << value if opposite(value.owner)
+        end
+      end
+    end
+    pieces
+  end
+
+  # Serialize the board, so i can predict next moves
+  def deep_copy(o)
+    Marshal.load(Marshal.dump(o))
+  end
 end
 
 # Base piece to represent an empty tile
@@ -78,10 +94,36 @@ class Piece
 
   # if the move is legal proceed to check if the piece can move
   def verify(board, target, moves = search(target))
-    return false if moves.nil?
+    clear
 
-    # if the move is legal, then proceed to check the tiles for other pieces.
-    check_tiles(board, moves) if check_moves(moves)
+    return false if moves.nil? || moves.empty?
+
+    self_check(board, target) if check_moves(moves) && check_tiles(board, moves)
+  end
+
+  # Check to see if the king is left exposed after a movement of own piece.
+  def self_check(board, target, copy = deep_copy(board), pieces = get_pieces(board), king_m = get_king(copy))
+    copy[@col][@row] = Piece.new('  ', [@col, @row])
+    copy[target[0]][target[1]] = @my_class.new(@image, [target[0], target[1]])
+
+    return false if pieces.any? { |piece| piece.check_king(copy, target, king_m) }
+
+    true
+  end
+
+  # check if by moving a piece leaves a king in check, if so returns true.
+  def check_king(copy, target, king_pos, moves = search(king_pos))
+    clear
+
+    return false if moves.nil? || moves.empty? || @pos == target
+
+    check_tiles(copy, moves) if check_moves(moves)
+  end
+
+  # return the king position on the board.
+  def get_king(board, pos = nil)
+    board.each { |_col, row| row.each { |_val, value| pos = value.pos if value.instance_of?(King) && value.owner == @owner } }
+    pos
   end
 
   # add colour to the image
@@ -229,7 +271,7 @@ class Queen < Piece
   end
 
   def check_moves(moves)
-    return true if moves.all? { |item| item.sum == @pos.sum || (item[0] - item[1]) == (@col - @row).abs }
+    return true if moves.all? { |item| item.sum == @pos.sum || (item[0] - item[1]).abs == (@col - @row).abs }
 
     return true if moves.all? { |item| item.include?(@col) || item.include?(@row) }
 
@@ -254,14 +296,6 @@ class King < Piece
     clean_moves
   end
 
-  # if the move is legal proceed to check if the piece can move
-  def verify(board, target, moves = search(target))
-    return false if moves.nil?
-
-    # if the move is legal, then proceed to check the tiles for other pieces.
-    check_tiles(board, moves) if check_moves(moves)
-  end
- 
   private
 
   def check_tiles(board, moves, tile = moves[0])
@@ -319,3 +353,7 @@ class Pawn < Piece
     [[@col, @row + 1], [@col + 1, @row + 1], [@col - 1, @row + 1]]
   end
 end
+
+
+# Serializer las variables, para guardar el estado, si es un movimiento ilegal volver al estado anterior si no el estada permanece
+
