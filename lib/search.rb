@@ -52,7 +52,7 @@ end
 
 # Base piece to represent an empty tile
 class Piece
-  attr_accessor :image, :pos, :pieces, :owner, :col, :row
+  attr_accessor :image, :pos, :pieces, :owner, :col, :row, :my_class
 
   def initialize(image, pos, parent = nil)
     @image = image
@@ -326,7 +326,34 @@ class Pawn < Piece
     clean_moves
   end
 
+  def verify(board, target, moves = search(target))
+    clear
+
+    return false if moves.nil? || moves.empty?
+
+    self_check(board, target) if check_moves(moves) && check_tiles(board, moves)
+  end
+
+  def check_promotion(piece, target)
+    return get_new_piece if @owner == 'Black' && target[1] == 1
+
+    return get_new_piece if @owner == 'White' && target[1] == 8
+
+    piece
+  end
+
   private
+
+  def get_new_piece
+    if @owner == 'Black'
+      pieces =  { q: Queen.new("\u265B ", @pos), r: Rook.new("\u265C ", @pos), k: Knight.new("\u265E ", @pos) }
+    else
+      pieces =  { q: Queen.new("\u2655 ", @pos), r: Rook.new("\u2656 ", @pos), k: Knight.new("\u2658 ", @pos) }
+    end
+    piece = promotion_text
+
+    pieces[piece]
+  end
 
   def check_tiles(board, moves, col = moves[0][0], row = moves[0][1])
     return true if col == @col && moves.all? { |item| board[item[0]][item[1]].instance_of?(Piece) }
@@ -341,6 +368,18 @@ class Pawn < Piece
   end
 
   # updates the moves depending on the owner of the piece.
+  def promotion_text
+    puts 'Congratz! Your Pawn got to the last row!'
+    puts 'What kind of piece would you like it to become?'
+    puts 'Queen(Q)? Rook(R) or Knight(K)? Please input the letter of choice!'
+    piece = gets.chomp.downcase
+    until %w[q r k].include?(piece)
+      puts 'invalid try again please!'
+      piece = gets.chomp.downcase
+    end
+    piece.to_sym
+  end
+
   def update_moves
     @owner == 'Black' ? update_moves_black : update_moves_white
   end
@@ -353,7 +392,4 @@ class Pawn < Piece
     [[@col, @row + 1], [@col + 1, @row + 1], [@col - 1, @row + 1]]
   end
 end
-
-
-# Serializer las variables, para guardar el estado, si es un movimiento ilegal volver al estado anterior si no el estada permanece
 

@@ -10,7 +10,7 @@ class Board
 
   def display_board(count = 8, black = "\e[0m")
     until count.zero?
-      
+
       even_line(black, count) if count.even?
 
       odd_line(black, count) if count.odd?

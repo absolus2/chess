@@ -33,7 +33,8 @@ class Chess
     end
   end
 
-  def change_piece(piece, change)
+  def change_piece(piece, change, target = change.pos)
+    piece = check_pawn_promotion(piece, target)
     @board_hash[piece.col][piece.row] = Piece.new('  ', [piece.col, piece.row])
     @board_hash[change.col][change.row] = piece
     piece.update(change)
@@ -48,7 +49,7 @@ class Chess
 
     return move_info(player, array = []) if error_move(array)
 
-    puts "\nWhere would you like to move #{array[0].image}?"
+    puts "\nWhere would you like to move \e[46m#{array[0].display_image}\e[0m?"
     array << get_piece(player)
     array
   end
@@ -71,16 +72,24 @@ class Chess
     @board.board[letters[piece[0]]][piece[1].to_i]
   end
 
+  # check if pawn is in for a promotion if so, change the piece.
+  def check_pawn_promotion(piece, target)
+    return piece.check_promotion(piece, target) if piece.my_class == Pawn
+
+    piece
+  end
+
+  # play turn, divived between white and black player, with the odd player being the white.
   def play_turn(player = @turn.odd? ? 'White' : 'Black')
     @player_turn = player
     move_piece(@player_turn)
   end
 
+  # put method for the intro to the game
   def intro
     puts 'Welcome to this chess game, The rules are the basic ones of chess'
     puts 'Player1 will be the white pieces and the player2 will be the black pieces'
   end
-
 end
 
 new_game = Chess.new
