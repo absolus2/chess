@@ -114,6 +114,7 @@ class Piece
   # check if by moving a piece leaves a king in check, if so returns true.
   def check_king(copy, target, king_pos, moves = search(king_pos))
     clear
+    p "target#{target}, king_pos #{king_pos} and moves #{moves}"
 
     return false if moves.nil? || moves.empty? || @pos == target
 
@@ -174,7 +175,7 @@ class Rook < Piece
 
   # check if the move is legal (that can be done in only 1 movement)
   def check_moves(moves)
-    moves.all? { |item| item.include?(@col) || item.include?(@row) }
+    return true if moves.all? { |item| item[0] == @col || item[1] == @row }
   end
 
   def update_moves
@@ -294,6 +295,26 @@ class King < Piece
     @posible_m = update_moves
     @my_class = King
     clean_moves
+  end
+
+  def verify(board, target, moves = search(target), copy = deep_copy(board))
+    clear
+
+    return false if moves.nil? || moves.empty?
+
+    self_check(copy, target) if check_moves(moves) && check_tiles(board, moves)
+  end
+
+  # ok, create method to check if i move the king would be an illegal move and could potenttialy become a self check
+  # so i need a list of the pieces of the enemie and
+
+  def self_check(copy, target, pieces = get_pieces(copy))
+    copy[@col][@row] = Piece.new('  ', [@col, @row])
+    copy[target[0]][target[1]] = @my_class.new(@image, target)
+
+    return false if pieces.any? { |piece| piece.verify(copy, target) }
+
+    true
   end
 
   private
