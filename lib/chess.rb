@@ -20,7 +20,12 @@ class Chess
       play_turn
       puts ' '
       @turn += 1
+      # @turn.odd? ? check_mate('Black') : check_mate('White')
     end
+  end
+
+  def check_mate(player, king = @board.get_king(player)[0].pos, pieces = @board.get_pieces(player))
+    pieces.any? { |piece| p piece.verify(@board_hash, king) }
   end
 
   def move_piece(player, movement = move_info(player), piece = movement[0], change = movement[1])
@@ -93,5 +98,7 @@ class Chess
 end
 
 new_game = Chess.new
+new_game.board_hash[4][4] = King.new("\u2654 ", [4, 4])
 
+new_game.board_hash[4][3] = Rook.new("\u265C ", [4, 3])
 new_game.play

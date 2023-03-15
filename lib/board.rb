@@ -1,11 +1,20 @@
 require_relative './search'
 # Class for the Board
 class Board
-  attr_accessor :board
+  attr_accessor :board, :kings
 
   def initialize
     @board = Hash[(1..8).map { |num| [num, Hash[(1..8).map { |nums| [nums, Piece.new('  ', [num, nums])] }]] }]
-    base_config
+  end
+
+  def get_pieces(player, array = [])
+    @board.each { |_key, column| column.each { |_col, piece| array << piece if piece.owner != player && piece.owner != nil } }
+    array
+  end
+
+  def get_king(player, king = [])
+    @board.each { |_key, column| column.each { |_col, piece| king << piece if piece.my_class == King && piece.owner != player } }
+    king
   end
 
   def display_board(count = 8, black = "\e[0m")
