@@ -114,11 +114,20 @@ class Piece
   # check if by moving a piece leaves a king in check, if so returns true.
   def check_king(copy, target, king_pos, moves = search(king_pos))
     clear
-    p "target#{target}, king_pos #{king_pos} and moves #{moves}"
 
     return false if moves.nil? || moves.empty? || @pos == target
 
     check_tiles(copy, moves) if check_moves(moves)
+  end
+
+  # return the full path to reach the target
+
+  def pathway(board, target, moves = search(target))
+    clear
+
+    return false if moves.nil? || moves.empty? || @pos == target
+
+    return moves if check_moves(moves) && check_tiles(board, moves)
   end
 
   # return the king position on the board.
@@ -274,7 +283,7 @@ class Queen < Piece
   def check_moves(moves)
     return true if moves.all? { |item| item.sum == @pos.sum || (item[0] - item[1]).abs == (@col - @row).abs }
 
-    return true if moves.all? { |item| item.include?(@col) || item.include?(@row) }
+    return true if moves.all? { |item| item[0] == @col || item[1] == @row }
 
     false
   end
@@ -304,9 +313,6 @@ class King < Piece
 
     self_check(copy, target) if check_moves(moves) && check_tiles(board, moves)
   end
-
-  # ok, create method to check if i move the king would be an illegal move and could potenttialy become a self check
-  # so i need a list of the pieces of the enemie and
 
   def self_check(copy, target, pieces = get_pieces(copy))
     copy[@col][@row] = Piece.new('  ', [@col, @row])
@@ -388,7 +394,6 @@ class Pawn < Piece
     true if moves.length == 1
   end
 
-  # updates the moves depending on the owner of the piece.
   def promotion_text
     puts 'Congratz! Your Pawn got to the last row!'
     puts 'What kind of piece would you like it to become?'
@@ -401,6 +406,7 @@ class Pawn < Piece
     piece.to_sym
   end
 
+  # updates the moves depending on the owner of the piece.
   def update_moves
     @owner == 'Black' ? update_moves_black : update_moves_white
   end
