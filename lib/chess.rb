@@ -14,10 +14,6 @@ class Chess
     @moves = []
   end
 
-  def deep_copy(o)
-    Marshal.load(Marshal.dump(o))
-  end
-
   # "Main" function.
   def play(_int = intro)
     until check_mate(@player)
