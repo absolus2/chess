@@ -1,17 +1,19 @@
 module Saving
 
   # Save the class variable
-  def save_game(time = Time.now.strftime("%d-%m-%Y %H-%M"))
+  def save_game(time = Time.now.strftime('%d-%m-%Y %H-%M'))
     # first check if the directory is already there, if not created it
     Dir.mkdir('saves') unless Dir.exist?('saves')
-    
+
     # create a base config file, for "reset" games if the file doesn't exist.
-    unless Dir.entries('saves').include?("base_config")
-      File.open("./saves/base_config", 'wb') { |f| f.write(Marshal.dump(self))}
+    unless Dir.entries('saves').include?('base_config')
+      File.open('./saves/base_config', 'wb') { |f| f.write(Marshal.dump(self))}
     end
 
     # ok, now serialize the class itself, and save it to the directory save file
-    File.open(Dir.pwd + "/saves/#{time}", 'wb') { |f| f.write(Marshal.dump(self))}
+    File.open(Dir.pwd + "/saves/#{time}", 'wb') { |f| f.write(Marshal.dump(self)) }
+
+    puts 'The game has been save successfully'
   end
 
   # method to load the file data.
@@ -25,9 +27,30 @@ module Saving
   end
 
   def loaded_game(file)
-    self.age = file.age
-    self.breed = file.breed
-    self.desu = file.desu
+    self.board = file.board
+    self.board_hash = file.board_hash
+    self.turn = file.turn
+    self.player_turn = file.turn
+    self.player = file.player
+    self.last_move_piece = file.last_move_piece
+    self.moves = file.moves
+    puts 'file loaded succesfully'
+  end
+
+  # check to see if the directory exist and if so, also check for files
+
+  def check_loads
+    load_not = load_files? if Dir.exist?('./saves') && Dir.entries('./saves').length > 3
+
+    return if load_not != 'y'
+
+    load_game
+  end
+
+  def load_files?
+    puts 'Hello, we detected saved games!'
+    puts 'Would you like to load one? (y/n)'
+    answer = gets.chomp
   end
 
   private
@@ -50,22 +73,3 @@ module Saving
 
 end
 
-
-class Test
-
-  include Saving
-
-  attr_accessor :age, :breed, :desu
-
-  def initialize
-    @age = 44
-    @breed = 'nort america'
-    @desu = 'desua'
-  end
-
-end
-
-new_test = Test.new
-new_test.save_game
-
-new_test.load_game

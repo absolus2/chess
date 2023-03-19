@@ -1,8 +1,11 @@
 require_relative './search'
 require_relative './board'
+require_relative './saves'
 # Chess class to play the game.
 class Chess
-  attr_accessor :board, :board_hash
+  attr_accessor :board, :board_hash, :turn, :player_turn, :player, :last_move_piece, :moves
+
+  include Saving
 
   def initialize
     @board = Board.new
@@ -112,7 +115,10 @@ class Chess
   def get_piece(player, count = 0, letters = Hash[('a'..'h').map { |num| [num, count += 1] }])
     piece = gets.chomp.split(//)
 
+    save_game if piece.join == 'save'
+
     if check_piece(piece)
+
       return 'draw' if piece.join == 'draw'
 
       puts 'Invalid move, Try again!'
@@ -153,11 +159,10 @@ class Chess
     puts 'Welcome to this chess game, The rules are the basic ones of chess'
     puts 'Player1 will be the white pieces and the player2 will be the black pieces'
     puts "\e[33mIf you would like to draw at any point in the game type \e[34m'draw'\e[33mThe game would end at that moment.\e[0m"
+    puts "\e[32mYou can save the game at any time typing \e[34m'save'\e[32m onto the console!\e[0m"
     puts 'Good luck! Have fun!'
+    check_loads
   end
 end
 
-new_game = Chess.new.play
-
-
-
+Chess.new.play
