@@ -15,6 +15,7 @@ class Chess
     @player = @turn.odd? ? 'White' : 'Black'
     @last_move_piece = nil
     @moves = []
+    save_base
   end
 
   # "Main" function.
@@ -119,6 +120,8 @@ class Chess
 
     if check_piece(piece)
 
+      reset_game if piece.join == 'reset'
+
       return 'draw' if piece.join == 'draw'
 
       puts 'Invalid move, Try again!'
@@ -130,7 +133,7 @@ class Chess
 
   # return if the piece to move is not a valid one.
   def check_piece(piece)
-    true if piece.length <= 1 || piece[1] =~ /[A-Za-z]/ || piece.length > 2 || piece.all? { |i| i.is_a? Integer }
+    return true if piece.length <= 1 || piece[1] =~ /[A-Za-z]/ || piece.length > 2 || piece.all? { |i| i.is_a? Integer }
   end
 
   # puts message about the game being over, after a player call a draw.
@@ -160,6 +163,7 @@ class Chess
     puts 'Player1 will be the white pieces and the player2 will be the black pieces'
     puts "\e[33mIf you would like to draw at any point in the game type \e[34m'draw'\e[33mThe game would end at that moment.\e[0m"
     puts "\e[32mYou can save the game at any time typing \e[34m'save'\e[32m onto the console!\e[0m"
+    puts "\e[90mand last but not least!, You can reset the game typing \e[34m'reset'\e[90m onto the console!\e[0m"
     puts 'Good luck! Have fun!'
     check_loads
   end

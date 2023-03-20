@@ -1,15 +1,16 @@
 module Saving
 
+  def save_base
+    Dir.mkdir('saves') unless Dir.exist?('saves') 
+    # create a base config file, for "reset" games if the file doesn't exist.
+    return if Dir.entries('saves').include?('base_config')
+
+    File.open('./saves/base_config', 'wb') { |f| f.write(Marshal.dump(self))}
+  end
+
   # Save the class variable
   def save_game(time = Time.now.strftime('%d-%m-%Y %H-%M'))
     # first check if the directory is already there, if not created it
-    Dir.mkdir('saves') unless Dir.exist?('saves')
-
-    # create a base config file, for "reset" games if the file doesn't exist.
-    unless Dir.entries('saves').include?('base_config')
-      File.open('./saves/base_config', 'wb') { |f| f.write(Marshal.dump(self))}
-    end
-
     # ok, now serialize the class itself, and save it to the directory save file
     File.open(Dir.pwd + "/saves/#{time}", 'wb') { |f| f.write(Marshal.dump(self)) }
 
@@ -48,9 +49,16 @@ module Saving
   end
 
   def load_files?
-    puts 'Hello, we detected saved games!'
+    puts "\nHello, we detected saved games!"
     puts 'Would you like to load one? (y/n)'
-    answer = gets.chomp
+    gets.chomp
+  end
+
+  def reset_game(file = Dir.entries('./saves').select! { |f| f.include?('base') }.first)
+    load_f = Marshal.load(File.binread("saves/#{file}"))
+
+    loaded_game(load_f)
+    play
   end
 
   private
