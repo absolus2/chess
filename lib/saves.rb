@@ -1,5 +1,5 @@
+# module to save the chess game
 module Saving
-
   def save_base
     Dir.mkdir('saves') unless Dir.exist?('saves') 
     # create a base config file, for "reset" games if the file doesn't exist.
@@ -78,6 +78,4 @@ module Saving
   def check_answer(answer, files)
     return true if answer =~ /\A\d+\Z/ && files[answer.to_i]
   end
-
 end
-
